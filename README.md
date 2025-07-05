@@ -1,6 +1,6 @@
 # Sparse Encoder Training with Sentence Transformers v5 and Cornstack Dataset
 
-This repository contains modern, production-ready scripts for training sparse encoder models using **Sentence Transformers v5** with the high-quality Cornstack dataset from Nomic AI. The codebase has been completely updated to leverage the latest v5 features and best practices.
+This repository contains clean, production-ready scripts for training sparse encoder models using **Sentence Transformers v5** with the high-quality Cornstack dataset from Nomic AI.
 
 ## 🚀 What's New in v5
 
@@ -13,29 +13,19 @@ This repository contains modern, production-ready scripts for training sparse en
 
 ## 📊 Dataset Overview
 
-The Cornstack dataset is a large-scale, high-quality contrastive dataset for code retrieval spanning multiple programming languages. It features:
+The Cornstack dataset is a large-scale, high-quality contrastive dataset for code retrieval spanning multiple programming languages:
 
 - **Consistency Filtering**: Eliminates noisy positives for cleaner training data
 - **Hard Negatives**: Enriched with mined hard negatives for better contrastive learning
 - **Multi-Language Support**: Python, Java, JavaScript, TypeScript, Go, Rust, and C++
 - **High Quality**: Curated specifically for code retrieval and embedding tasks
 
-## ✨ Key Features
-
-- **🏗️ Modern Architecture**: Full Sentence Transformers v5 compatibility
-- **🎯 Multiple Model Types**: Standard SPLADE and inference-free SPLADE models
-- **🌍 Multi-Language Support**: Train on 7 different programming languages
-- **⚙️ Flexible Configuration**: Easy-to-use configuration system with presets
-- **📈 Comprehensive Evaluation**: BEIR, MTEB, and custom evaluation pipelines
-- **🔍 Rich Monitoring**: Beautiful console output with progress tracking
-- **📊 Advanced Analytics**: Sparsity analysis, token importance, and performance profiling
-
 ## 🛠️ Installation
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/joe32140/sparse-encoder-code.git
-cd sparse-encoder-code
+git clone https://github.com/joe32140/code-sparse-encoder.git
+cd code-sparse-encoder
 ```
 
 2. **Install dependencies:**
@@ -50,9 +40,24 @@ python -c "import sentence_transformers; print(f'Sentence Transformers version: 
 
 ## 🚀 Quick Start
 
-### Modern v5 Training (Recommended)
+### Working Training Script (Recommended)
 
-Use the new v5-optimized training script:
+Use the proven working training script:
+
+```bash
+# Basic training with default settings
+python train_sparse_encoder_cornstack.py
+
+# Configure via environment variables
+BASE_MODEL=answerdotai/ModernBERT-base MODEL_TYPE=splade MAX_SAMPLES=50000 python train_sparse_encoder_cornstack.py
+
+# Inference-free SPLADE training
+MODEL_TYPE=inference_free_splade python train_sparse_encoder_cornstack.py
+```
+
+### Modern v5 Training Script
+
+Use the configurable v5 training script:
 
 ```bash
 # Quick test on Python dataset
@@ -61,18 +66,8 @@ python train_sparse_encoder_v5.py --dataset python --model_type splade --config 
 # Development training with inference-free SPLADE
 python train_sparse_encoder_v5.py --dataset java --model_type inference_free_splade --config development
 
-# Production training with all features
+# Production training
 python train_sparse_encoder_v5.py --dataset python --model_type splade --config production --push_to_hub
-```
-
-### Legacy Training (Still Supported)
-
-```bash
-# Basic training
-python train_sparse_encoder_cornstack.py
-
-# Configurable training
-python train_configurable.py --dataset python --model_type splade --config development
 ```
 
 ## 📋 Available Options
@@ -129,44 +124,28 @@ Document: Input → MLMTransformer → SpladePooling → Sparse Embedding
 - **Document Path**: MLMTransformer + SpladePooling
 - **Use Case**: Production systems requiring fast query encoding
 
-## 🔄 Training Process
-
-The v5 training pipeline includes:
-
-1. **🔧 Configuration**: Load dataset and model configurations
-2. **📚 Dataset Loading**: Efficient loading with progress tracking
-3. **🏗️ Model Creation**: Initialize sparse encoder architecture
-4. **🎯 Loss Function**: Configure SpladeLoss with regularization
-5. **⚙️ Training Setup**: Create v5-optimized training arguments
-6. **📊 Evaluation**: Set up comprehensive evaluation pipeline
-7. **🚀 Training**: Execute training with monitoring
-8. **📈 Final Evaluation**: Comprehensive model assessment
-9. **💾 Model Saving**: Save and optionally push to Hub
-10. **🧪 Testing**: Validate model with sample queries
-
 ## 📊 Comprehensive Evaluation
 
-Use the new v5 evaluation script for detailed analysis:
+Use the evaluation script for detailed analysis:
 
 ```bash
 # Complete evaluation suite
 python evaluate_sparse_encoder_v5.py --model_path ./models/my-model --eval_type all
 
 # Specific evaluations
-python evaluate_sparse_encoder_v5.py --model_path naver/splade-v3 --eval_type sparsity beir performance
+python evaluate_sparse_encoder_v5.py --model_path naver/splade-v3 --eval_type sparsity beir
 
 # Custom dataset evaluation
 python evaluate_sparse_encoder_v5.py --model_path ./models/my-model --eval_type custom --custom_dataset nomic-ai/cornstack-python-v1
 
 # Generate detailed report
-python evaluate_sparse_encoder_v5.py --model_path ./models/my-model --eval_type all --output_path ./reports/evaluation.json
+python evaluate_sparse_encoder_v5.py --model_path ./models/my-model --eval_type all --output_path ./evaluation_report.json
 ```
 
 ### Evaluation Types
 - **🔍 Sparsity Analysis**: Detailed sparsity statistics and characteristics
 - **📊 BEIR Evaluation**: Performance on standard retrieval benchmarks
 - **⚡ Performance Benchmarking**: Speed and throughput analysis
-- **🎯 Token Importance**: Analysis of most important tokens/dimensions
 - **📋 Custom Dataset**: Evaluation on specific datasets
 
 ## 💻 Example Usage (v5 API)
@@ -185,9 +164,6 @@ documents = ["def read_file(filename): with open(filename, 'r') as f: return f.r
 query_embeddings = model.encode_query(queries)
 doc_embeddings = model.encode_document(documents)
 
-# Optional: Use v5 truncate_dim feature for efficiency
-query_embeddings_truncated = model.encode_query(queries, truncate_dim=256)
-
 # Compute similarity (dot product by default for sparse models)
 similarities = model.similarity(query_embeddings, doc_embeddings)
 print(f"Similarity: {similarities[0][0]:.4f}")
@@ -196,9 +172,6 @@ print(f"Similarity: {similarities[0][0]:.4f}")
 stats = model.sparsity(query_embeddings)
 print(f"Sparsity: {stats['sparsity_ratio']:.2%}")
 print(f"Active dimensions: {stats['active_dims']:.1f}")
-
-# v5 feature: Multi-device encoding for large batches
-# large_embeddings = model.encode_query(large_query_list, device=["cuda:0", "cuda:1"])
 ```
 
 ## ⚙️ Configuration System
@@ -207,16 +180,25 @@ The `config.py` file provides comprehensive configuration options:
 
 ```python
 # Example configuration usage
-from config import CORNSTACK_DATASETS, BASE_MODELS, TRAINING_CONFIGS, V5_FEATURES
+from config import CORNSTACK_DATASETS, BASE_MODELS, TRAINING_CONFIGS
 
 # Access configurations
 dataset_name = CORNSTACK_DATASETS["python"]
 base_model = BASE_MODELS["general"]
 training_config = TRAINING_CONFIGS["development"]
-v5_features = V5_FEATURES["use_truncate_dim"]
 ```
 
 ## 🎯 Training Tips & Best Practices
+
+### **Environment Variables (for train_sparse_encoder_cornstack.py)**
+```bash
+export BASE_MODEL="answerdotai/ModernBERT-base"
+export MODEL_TYPE="splade"  # or "inference_free_splade"
+export MAX_SAMPLES="50000"  # or leave unset for full dataset
+export NUM_EPOCHS="2"
+export BATCH_SIZE="32"
+export RUN_NAME="my-custom-run"
+```
 
 ### **Sparsity Optimization**
 - Monitor both performance metrics AND sparsity ratios
@@ -231,15 +213,8 @@ v5_features = V5_FEATURES["use_truncate_dim"]
 
 ### **v5 Specific Tips**
 - Use `encode_query()` and `encode_document()` instead of `encode()` with task parameters
-- Leverage `truncate_dim` for efficiency in production
 - Use `learning_rate_mapping` for fine-grained learning rate control
 - Enable `router_mapping` for inference-free models
-
-### **Hardware Optimization**
-- Use multiple GPUs with device mapping
-- Enable mixed precision training (BF16/FP16)
-- Optimize dataloader workers based on CPU cores
-- Pin memory for faster GPU transfers
 
 ## 🔧 Troubleshooting
 
@@ -253,54 +228,17 @@ v5_features = V5_FEATURES["use_truncate_dim"]
 | **Slow Training** | Use smaller models for testing, optimize batch size, enable mixed precision |
 | **Tokenizer Warnings** | Set `TOKENIZERS_PARALLELISM=false` environment variable |
 
-### **Performance Optimization Checklist**
-- ✅ Use BF16 on RTX 30/40 series GPUs
-- ✅ Set appropriate batch size for your GPU memory
-- ✅ Use `BatchSamplers.NO_DUPLICATES` for contrastive learning
-- ✅ Enable gradient checkpointing if memory constrained
-- ✅ Use multiple GPUs when available
-- ✅ Optimize dataloader workers (typically 4-8)
+## 📁 Repository Structure
 
-## 📚 Advanced Features
-
-### **Multi-Dataset Training**
-```python
-# Train on multiple datasets simultaneously
-datasets = {
-    "python": load_dataset("nomic-ai/cornstack-python-v1"),
-    "java": load_dataset("nomic-ai/cornstack-java-v1")
-}
-# Use MultiDatasetBatchSamplers for balanced sampling
 ```
-
-### **Custom Loss Functions**
-```python
-# Different loss functions for different datasets
-losses = {
-    "python": SpladeLoss(model, SparseMultipleNegativesRankingLoss(model)),
-    "java": SpladeLoss(model, SparseMultipleNegativesRankingLoss(model))
-}
+code-sparse-encoder/
+├── train_sparse_encoder_cornstack.py    # Working training script (recommended)
+├── train_sparse_encoder_v5.py           # Configurable v5 training script
+├── evaluate_sparse_encoder_v5.py        # Comprehensive evaluation script
+├── config.py                            # Configuration for datasets and models
+├── requirements.txt                      # Dependencies for v5
+└── README.md                            # This file
 ```
-
-### **Advanced Evaluation**
-```python
-# Custom evaluators for specific tasks
-evaluator = SparseInformationRetrievalEvaluator(
-    queries=custom_queries,
-    corpus=custom_corpus,
-    relevant_docs=relevance_judgments
-)
-```
-
-## 📈 Monitoring & Logging
-
-The codebase includes comprehensive monitoring:
-
-- **🎨 Rich Console Output**: Beautiful progress bars and tables
-- **📊 Weights & Biases Integration**: Automatic experiment tracking
-- **📋 Detailed Logging**: Comprehensive training and evaluation logs
-- **📈 Real-time Metrics**: Live monitoring of training progress
-- **🔍 Sparsity Tracking**: Monitor sparsity evolution during training
 
 ## 🤝 Contributing
 
@@ -334,11 +272,11 @@ If you use this code or the Cornstack dataset, please cite:
 
 ## 📜 License
 
-This project is licensed under the Apache 2.0 License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the Apache 2.0 License.
 
 ## 🔗 Links
 
 - **Sentence Transformers v5**: [Documentation](https://sbert.net/)
 - **Cornstack Dataset**: [Hugging Face](https://huggingface.co/datasets/nomic-ai/cornstack-python-v1)
 - **SPLADE Paper**: [arXiv](https://arxiv.org/abs/2109.10086)
-- **Issues & Support**: [GitHub Issues](https://github.com/joe32140/sparse-encoder-code/issues)
+- **Issues & Support**: [GitHub Issues](https://github.com/joe32140/code-sparse-encoder/issues)
